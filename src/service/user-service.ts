@@ -4,6 +4,7 @@ import {prismaClient} from "../application/database";
 import {HTTPException} from "hono/http-exception";
 import {ResponseUtils} from "../utils/response-utils";
 import * as bun from "bun";
+import {User} from "@prisma/client";
 
 export class UserService {
     static async registerUser(request: RegisterUserRequest): Promise<UserResponse> {
@@ -43,7 +44,7 @@ export class UserService {
         });
 
         if (!user) {
-            throw new HTTPException(400, {
+            throw new HTTPException(401, {
                 res: ResponseUtils.plainError('Username or password is incorrect')
             });
         }
@@ -51,7 +52,7 @@ export class UserService {
         const isPasswordMatch = await bun.password.verify(request.password, user.password, 'bcrypt');
 
         if (!isPasswordMatch) {
-            throw new HTTPException(400, {
+            throw new HTTPException(401, {
                 res: ResponseUtils.plainError('Username or password is incorrect')
             });
         }
@@ -69,5 +70,23 @@ export class UserService {
         response.token = user.token!;
 
         return response;
+    }
+
+    static async get(token: string | null | undefined): Promise<User> {
+        token = UserValidation.TOKEN.parse(token);
+
+        const user = await prismaClient.user.findFirst({
+            where: {
+                token
+            }
+        });
+
+        if (!user) {
+            throw new HTTPException(401, {
+                res: ResponseUtils.plainError('Unauthorized')
+            });
+        }
+
+        return user;
     }
 }
