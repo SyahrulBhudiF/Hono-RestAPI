@@ -1,84 +1,61 @@
-# User API Spec
+# Contact API Spec
 
-## Register User
+## Create Contact
 
-Endpoint : POST /api/users
+Endpoint : POST /api/contacts
+
+Request Header :
+- Authorization : token
 
 Request Body :
 
 ```json
 {
-  "username" : "user",
-  "password" : "rahasia",
-  "name" : "user name"
+  "first_name": "Nama Depan",
+  "last_name": "Nama Belakang",
+  "email": "user@gmail.com",
+  "phone": "08999999999"
 }
 ```
 
-Response Body (Success) :
+Response Body
 
 ```json
 {
   "data": {
-    "username": "user",
-    "name": "user name"
+    "id": 1,
+    "first_name": "Nama Depan",
+    "last_name": "Nama Belakang",
+    "email": "user@gmail.com",
+    "phone": "08999999999"
   }
 }
 ```
 
-Response Body (Failed) :
+## Get Contact
 
-```json
-{
-  "errors" : "Username must not blank, ..."
-}
-```
-
-## Login User
-
-Endpoint : POST /api/users/login
-
-Request Body :
-
-```json
-{
-  "username" : "user",
-  "password" : "rahasia"
-}
-```
-
-Response Body (Success) :
-
-```json
-{
-  "data" : {
-    "username" : "user",
-    "name" : "user name",
-    "token" : "token"
-  }
-}
-```
-
-## Get User
-
-Endpoint : GET /api/users/current
+Endpoint : GET /api/contacts/{idContact}
 
 Request Header :
 - Authorization : token
 
-Response Body (Success) :
+Response Body
 
 ```json
 {
-  "data" : {
-    "username" : "user",
-    "name" : "user name"
+  "data": {
+    "id": 1,
+    "first_name": "Nama Depan",
+    "last_name": "Nama Belakang",
+    "email": "user@gmail.com",
+    "phone": "08999999999"
   }
 }
 ```
 
-## Update User
+## Update Contact
 
-Endpoint : PATCH /api/users/current
+Endpoint : PUT /api/contacts/{idContact}
 
 Request Header :
 - Authorization : token
@@ -87,33 +64,80 @@ Request Body :
 
 ```json
 {
-  "name" : "Kalo mau update nama",
-  "password" : "kalo mau update password"
-}
+    "first_name": "Nama Depan",
+    "last_name": "Nama Belakang",
+    "email": "user@gmail.com",
+    "phone": "08999999999"
+  }
 ```
 
-Response Body (Success) :
+Response Body
 
 ```json
 {
-  "data" : {
-    "username" : "user",
-    "name" : "user name"
+  "data": {
+    "id": 1,
+    "first_name": "Nama Depan",
+    "last_name": "Nama Belakang",
+    "email": "user@gmail.com",
+    "phone": "08999999999"
   }
 }
 ```
 
-## Logout User
+## Remove Contact
 
-Endpoint : DELETE /api/users/current
+Endpoint : DELETE /api/contacts/{idContact}
 
 Request Header :
 - Authorization : token
 
-Response Body (Success) :
+Response Body
 
 ```json
 {
   "data" : true
+}
+```
+
+## Search Contact
+
+Endpoint : GET /api/contacts
+
+Request Header :
+- Authorization : token
+
+Query Parameter :
+- name : string, search ke first_name atau last_name
+- email : string, search ke email
+- phone : string, search ke phone
+- page : number, default 1
+- size : number, default 10
+
+Response Body
+
+```json
+{
+  "data" : [
+    {
+      "id": 1,
+      "first_name": "Nama Depan",
+      "last_name": "Nama Belakang",
+      "email": "user@gmail.com",
+      "phone": "08999999999"
+    },
+    {
+      "id": 2,
+      "first_name": "Nama Depan",
+      "last_name": "Nama Belakang",
+      "email": "user@gmail.com",
+      "phone": "08999999999"
+    }
+  ],
+  "paging" : {
+    "current_page" : 1,
+    "total_page" : 10,
+    "size" : 10
+  }
 }
 ```

@@ -90,3 +90,125 @@ describe('POST /api/contacts', async () => {
         expect(body.data).toBeDefined();
     });
 });
+
+describe('GEt /api/contacts/{id}', () => {
+
+    beforeEach(async () => {
+        await ContactTest.deleteAll()
+        await UserTest.create()
+        await ContactTest.create()
+    })
+
+    afterEach(async () => {
+        await ContactTest.deleteAll()
+        await UserTest.delete()
+    })
+
+    it('should get 404 if contact is not found', async () => {
+        const contact = await ContactTest.get()
+
+        const response = await app.request('/api/contacts/' + (contact.id + 1), {
+            method: 'get',
+            headers: {
+                'Authorization': 'test'
+            }
+        })
+
+        expect(response.status).toBe(404)
+    });
+
+    it('should success if contact is exists', async () => {
+        const contact = await ContactTest.get()
+        console.log(contact)
+
+        const response = await app.request('/api/contacts/' + contact.id, {
+            method: 'get',
+            headers: {
+                'Authorization': 'test'
+            }
+        })
+
+        expect(response.status).toBe(200)
+
+        const body = await response.json()
+    });
+})
+
+describe('PUT /api/contacts/{id}', () => {
+
+    beforeEach(async () => {
+        await ContactTest.deleteAll()
+        await UserTest.create()
+        await ContactTest.create()
+    })
+
+    afterEach(async () => {
+        await ContactTest.deleteAll()
+        await UserTest.delete()
+    })
+
+    it('should rejected update contact if request is invalid', async () => {
+        const contact = await ContactTest.get()
+
+        const response = await app.request('/api/contacts/' + contact.id, {
+            method: 'put',
+            headers: {
+                'Authorization': 'test'
+            },
+            body: JSON.stringify({
+                first_name: ""
+            })
+        })
+
+        expect(response.status).toBe(400)
+
+        const body = await response.json()
+        expect(body.message).toBeDefined()
+    });
+
+    it('should rejected update contact if id is not found', async () => {
+        const contact = await ContactTest.get()
+
+        const response = await app.request('/api/contacts/' + (contact.id + 1), {
+            method: 'put',
+            headers: {
+                'Authorization': 'test'
+            },
+            body: JSON.stringify({
+                first_name: "Budi"
+            })
+        })
+
+        expect(response.status).toBe(404)
+
+        const body = await response.json()
+        expect(body.message).toBeDefined()
+    });
+
+    it('should success update contact if request is valid', async () => {
+        const contact = await ContactTest.get()
+
+        const response = await app.request('/api/contacts/' + contact.id, {
+            method: 'put',
+            headers: {
+                'Authorization': 'test'
+            },
+            body: JSON.stringify({
+                first_name: "Budi",
+                last_name: "Ferdi",
+                email: "user@gmail.com",
+                phone: "1231234"
+            })
+        })
+
+        expect(response.status).toBe(200)
+
+        const body = await response.json()
+        expect(body.data).toBeDefined()
+        expect(body.data.first_name).toBe("Budi")
+        expect(body.data.last_name).toBe("Ferdi")
+        expect(body.data.email).toBe("user@gmail.com")
+        expect(body.data.phone).toBe("1231234")
+    });
+
+});

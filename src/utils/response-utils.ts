@@ -23,35 +23,11 @@ export class ResponseUtils {
     *
     * using with c.json in Hono
     * */
-    static error(message: string, status: number = 400): object {
+    static error(message: any, status: any = 'error'): object {
         return {
-            status: 'error',
+            status,
             message,
             data: null
         };
-    }
-
-    /*
-    * This method is used to return an error response
-    * @param message: string
-    * @param status: number
-    * @return Response
-    *
-    * using with plain response like HTTPException
-    * */
-    static plainError(message: string, status: number = 400): Response {
-        return new Response(
-            JSON.stringify({
-                status: 'error',
-                message,
-                data: null
-            }),
-            {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                status
-            }
-        );
     }
 }

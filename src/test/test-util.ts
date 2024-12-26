@@ -1,4 +1,5 @@
 import {prismaClient} from "../application/database";
+import {Contact} from "@prisma/client";
 
 export class UserTest {
     static async create() {
@@ -27,6 +28,33 @@ export class ContactTest {
             where: {
                 username: 'test'
             }
-        });
+        })
     }
+
+    static async create() {
+        await prismaClient.contact.create({
+            data: {
+                first_name: "Budi",
+                last_name: "Ferdi",
+                email: "test@gmail.com",
+                phone: "123123",
+                username: "test"
+            }
+        })
+    }
+
+    static async createMany(n: number) {
+        for (let i = 0; i < n; i++) {
+            await this.create()
+        }
+    }
+
+    static async get(): Promise<Contact> {
+        return prismaClient.contact.findFirstOrThrow({
+            where: {
+                username: "test"
+            }
+        })
+    }
+
 }

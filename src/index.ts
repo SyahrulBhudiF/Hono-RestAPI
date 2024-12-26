@@ -21,7 +21,11 @@ app.onError(async (err, c) => {
 
     } else if (err instanceof ZodError) {
         c.status(400);
-        return c.json(ResponseUtils.error(err.message));
+        const errors = err.errors.map(error => ({
+            field: error.path[0],
+            message: error.message
+        }));
+        return c.json(ResponseUtils.error(errors, "Validation error"));
 
     } else {
         c.status(500);

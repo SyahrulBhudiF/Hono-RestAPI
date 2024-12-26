@@ -25,7 +25,7 @@ export class UserService {
 
         if (totalUserWithSameUsername > 0) {
             throw new HTTPException(400, {
-                res: ResponseUtils.plainError('Username already taken')
+                message: 'Username already taken'
             });
         }
 
@@ -52,7 +52,7 @@ export class UserService {
 
         if (!user) {
             throw new HTTPException(401, {
-                res: ResponseUtils.plainError('Username or password is incorrect')
+                message: 'Username or password is incorrect'
             });
         }
 
@@ -60,7 +60,7 @@ export class UserService {
 
         if (!isPasswordMatch) {
             throw new HTTPException(401, {
-                res: ResponseUtils.plainError('Username or password is incorrect')
+                message: 'Username or password is incorrect'
             });
         }
 
@@ -79,7 +79,7 @@ export class UserService {
         return response;
     }
 
-    static async get(token: string | null | undefined): Promise<User> {
+    static async get(token: string | null | undefined): Promise<UserResponse> {
         token = UserValidation.TOKEN.parse(token);
 
         const user = await prismaClient.user.findFirst({
@@ -90,11 +90,11 @@ export class UserService {
 
         if (!user) {
             throw new HTTPException(401, {
-                res: ResponseUtils.plainError('Unauthorized')
+                message: 'Unauthorized'
             });
         }
 
-        return user;
+        return toUserResponse(user);
     }
 
     static async update(user: User, request: UpdateUserRequest): Promise<UserResponse> {
