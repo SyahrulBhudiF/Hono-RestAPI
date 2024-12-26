@@ -9,8 +9,9 @@ import {UserValidation} from "../validation/user-validation";
 import {prismaClient} from "../application/database";
 import {HTTPException} from "hono/http-exception";
 import {ResponseUtils} from "../utils/response-utils";
-import * as bun from "bun";
 import {User} from "@prisma/client";
+import * as crypto from "node:crypto";
+import * as bun from "bun";
 
 export class UserService {
     static async registerUser(request: RegisterUserRequest): Promise<UserResponse> {
@@ -118,5 +119,18 @@ export class UserService {
         });
 
         return toUserResponse(user);
+    }
+
+    static async logout(user: User): Promise<boolean> {
+        await prismaClient.user.update({
+            where: {
+                username: user.username
+            },
+            data: {
+                token: null
+            }
+        });
+
+        return true;
     }
 }

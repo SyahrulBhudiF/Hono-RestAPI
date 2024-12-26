@@ -40,3 +40,13 @@ userController.patch('/current', async (c) => {
 
     return c.json(ResponseUtils.success(response, 'User updated successfully'));
 });
+
+userController.delete('/current', async (c) => {
+    const user = c.get('user') as User;
+
+    const response = await UserService.logout(user);
+
+    return response
+        ? c.json(ResponseUtils.success(null, 'User logged out successfully'))
+        : c.json(ResponseUtils.error('Failed to logout'));
+});
