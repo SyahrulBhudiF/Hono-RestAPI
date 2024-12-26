@@ -1,5 +1,5 @@
 import {Context, Hono} from "hono";
-import {RegisterUserRequest} from "../model/user-model";
+import {RegisterUserRequest, UpdateUserRequest} from "../model/user-model";
 import {UserService} from "../service/user-service";
 import {ResponseUtils} from "../utils/response-utils";
 import {ApplicationVariables} from "../model/app-model";
@@ -30,4 +30,13 @@ userController.get('/current', async (c) => {
     const user = c.get('user') as User;
 
     return c.json(ResponseUtils.success(user));
+});
+
+userController.patch('/current', async (c) => {
+    const user = c.get('user') as User;
+    const request = await c.req.json() as UpdateUserRequest;
+
+    const response = await UserService.update(user, request);
+
+    return c.json(ResponseUtils.success(response, 'User updated successfully'));
 });
