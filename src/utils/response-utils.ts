@@ -7,11 +7,12 @@ export class ResponseUtils {
     *
     * using with c.json in Hono
     * */
-    static success(data: Array<any> | Object | null, message: string = 'Success'): object {
+    static success(data: Array<any> | Object | null, message: string = 'Success', paging: any = undefined): object {
         return {
             status: 'success',
             message,
-            data
+            data,
+            paging
         };
     }
 
