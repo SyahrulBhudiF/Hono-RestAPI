@@ -4,16 +4,15 @@ import {HTTPException} from "hono/http-exception";
 import {ResponseUtils} from "./utils/response-utils";
 import {ZodError} from "zod";
 import {RouteCollector} from "./utils/route-utils";
+import {contactController} from "./controller/contact-controller";
 
 const app = new Hono()
-
-const routes: { method: string; path: string }[] = [];
-
 app.get('/', (c) => {
     return c.text('Hello Hono!')
 })
 
 app.route('/api', userController)
+app.route('/api', contactController)
 
 app.onError(async (err, c) => {
     if (err instanceof HTTPException) {

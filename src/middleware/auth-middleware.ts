@@ -1,18 +1,21 @@
-import {Context, Next} from "hono";
+import {Context, MiddlewareHandler, Next} from "hono";
 import {ResponseUtils} from "../utils/response-utils";
 import {UserService} from "../service/user-service";
 
-export async function authMiddleware(c: Context, next: Next) {
+export const authMiddleware: MiddlewareHandler = async (c: Context, next: Next) => {
     const token = c.req.header('Authorization');
+
     if (!token) {
-        return c.json(ResponseUtils.error('Authorization header is missing'), 401);
+        return c.json(ResponseUtils.error('Unauthorized', 401));
     }
 
-    try {
-        const user = await UserService.get(token);
-        c.set('user', user);
-        await next();
-    } catch (error) {
-        return c.json(ResponseUtils.error('Unauthorized'), 401);
+    const user = await UserService.get(token);
+
+    if (!user) {
+        return c.json(ResponseUtils.error('Unauthorized', 401));
     }
+
+    c.set('user', user);
+
+    await next();
 }
