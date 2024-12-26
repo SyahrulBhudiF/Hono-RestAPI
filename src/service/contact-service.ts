@@ -9,7 +9,6 @@ import {
 import {ContactValidation} from "../validation/contact-validation";
 import {prismaClient} from "../application/database";
 import {HTTPException} from "hono/http-exception";
-import {ResponseUtils} from "../utils/response-utils";
 import {Pageable} from "../model/page-model";
 
 export class ContactService {
