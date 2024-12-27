@@ -1,7 +1,8 @@
 {
   "name": "Hono-RestAPI",
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "bun run --hot src/index.ts",
+    "build": "bun build src/index.ts --outfile=dist/index.js --target=bun"
   },
   "dependencies": {
     "@prisma/client": "6.1.0",

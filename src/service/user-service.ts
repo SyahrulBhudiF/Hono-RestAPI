@@ -10,8 +10,8 @@ import {prismaClient} from "../application/database";
 import {HTTPException} from "hono/http-exception";
 import {ResponseUtils} from "../utils/response-utils";
 import {User} from "@prisma/client";
-import * as crypto from "node:crypto";
-import * as bun from "bun";
+import {randomUUID} from "node:crypto";
+import {password} from "bun";
 
 export class UserService {
     static async registerUser(request: RegisterUserRequest): Promise<UserResponse> {
@@ -29,7 +29,7 @@ export class UserService {
             });
         }
 
-        request.password = await bun.password.hash(request.password, {
+        request.password = await password.hash(request.password, {
             algorithm: "bcrypt",
             cost: 10
         });
@@ -56,7 +56,7 @@ export class UserService {
             });
         }
 
-        const isPasswordMatch = await bun.password.verify(request.password, user.password, 'bcrypt');
+        const isPasswordMatch = await password.verify(request.password, user.password, 'bcrypt');
 
         if (!isPasswordMatch) {
             throw new HTTPException(401, {
@@ -69,7 +69,7 @@ export class UserService {
                 username: request.username
             },
             data: {
-                token: crypto.randomUUID()
+                token: randomUUID()
             }
         })
 
@@ -105,7 +105,7 @@ export class UserService {
         }
 
         if (request.password) {
-            user.password = await bun.password.hash(request.password, {
+            user.password = await password.hash(request.password, {
                 algorithm: "bcrypt",
                 cost: 10
             });
