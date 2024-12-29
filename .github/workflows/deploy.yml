@@ -1,4 +1,4 @@
-name: Dev Server Deployment
+name: Server Deployment
 
 on:
   push:
