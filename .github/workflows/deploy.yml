@@ -1,40 +1,41 @@
 name: Server Deployment Production
-
 on:
   push:
     branches:
       - master
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Setup SCP & SSH
-        run: sudo apt-get install openssh-client
-
-      - name: Add SSH host key
+        with:
+          fetch-depth: 0
+          
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_SECRET_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      - name: Prepare private key 
+      - name: Create remote directory if not exists
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_SECRET_KEY }}" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ${{ secrets.SSH_PATH }}"
+
+      - name: Set proper permissions on remote directory
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "sudo chown -R ${{ secrets.SSH_USER }}:${{ secrets.SSH_USER }} ${{ secrets.SSH_PATH }}"
 
       - name: Copy project files to server
         run: |
-          scp -i ~/.ssh/id_rsa -r . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }}
+          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa" \
+            --exclude '.git' \
+            --exclude 'node_modules' \
+            --exclude '.env' \
+            . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }}
 
-      - name: SSH into server and run docker-compose up
+      - name: Deploy with Docker Compose
         run: |
-          ssh -i ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
-            cd ${{ secrets.SSH_PATH }}
-            docker-compose down
-            docker-compose up -d
-          EOF
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.SSH_PATH }} && docker-compose down && docker-compose up -d"
