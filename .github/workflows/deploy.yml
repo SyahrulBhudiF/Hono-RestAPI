@@ -18,7 +18,6 @@ jobs:
 
       - name: Prepare private key 
         run: |
-          mkdir -p ~/.ssh
           echo "${{ secrets.SSH_SECRET_KEY }}" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
 
       - name: Copy project files to server
