@@ -16,7 +16,7 @@ jobs:
       - name: Setup SCP & SSH
         run: sudo apt-get install openssh-client
 
-      - name: Prepare priavte key 
+      - name: Prepare private key 
         run: echo "${{ secrets.SSH_SECRET_KEY }}" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
 
       - name: Copy project files to server
