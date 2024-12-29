@@ -29,12 +29,12 @@ jobs:
 
       - name: Copy project files to server
         run: |
-          scp -i ~/.ssh/id_rsa -r . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }}
+          scp -i -r . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }}
 
       - name: SSH into server and run docker-compose up
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
-            cd /deployment
+          ssh -i ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+            cd ${{ secrets.SSH_PATH }}
             docker-compose down
             docker-compose up -d
           EOF
