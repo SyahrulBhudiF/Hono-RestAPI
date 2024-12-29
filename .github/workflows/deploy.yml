@@ -16,6 +16,12 @@ jobs:
       - name: Setup SCP & SSH
         run: sudo apt-get install openssh-client
 
+      - name: Add SSH host key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
       - name: Prepare private key 
         run: |
           mkdir -p ~/.ssh
