@@ -34,7 +34,7 @@ jobs:
       - name: SSH into server and run docker-compose up
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
-            cd ${{ secrets.SSH_PATH }}
+            cd /deployment
             docker-compose down
             docker-compose up -d
           EOF
