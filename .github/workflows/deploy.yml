@@ -1,0 +1,32 @@
+name: Dev Server Deployment
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup SCP & SSH
+        run: sudo apt-get install openssh-client
+
+      - name: Prepare priavte key 
+        run: echo "${{ secrets.SSH_SECRET_KEY }}" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+
+      - name: Copy project files to server
+        run: |
+          scp -i -r . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }}
+
+      - name: SSH into server and run docker-compose up
+        run: |
+          ssh -i ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+            cd ${{ secrets.SSH_PATH }}
+            docker-compose down
+            docker-compose up -d
+          EOF
