@@ -27,6 +27,7 @@ jobs:
       
       - name: Copy project files to server
         run: |
+          rm -rf .git
           scp -i ~/.ssh/id_rsa -r . ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }}
       
       - name: SSH into server and run docker-compose up
